@@ -1,0 +1,12 @@
+# https://docs.aws.amazon.com/codedeploy/latest/userguide/reference-appspec-file-structure-hooks.html#appspec-hooks-server
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: ~/code
+
+hooks:
+   AfterInstall:
+     - location: scripts/start-docker.sh
+   BeforeAllowTraffic:
+     - location: scripts/ping-until-server-start.sh

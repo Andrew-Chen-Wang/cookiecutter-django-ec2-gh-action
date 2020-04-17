@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=github_ec2_deploy
+POSTGRES_USER=YlCjwdzRWPHVAUNeZfFJnBSuuOaaJtqg
+POSTGRES_PASSWORD=Aiys4NSWt3lYnzM4XDfaP2MfZ57zQNyDAvt9TFDVE7p26fXhMrzJL9DaUTfdu6e9
