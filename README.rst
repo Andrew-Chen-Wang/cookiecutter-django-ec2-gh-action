@@ -1,17 +1,50 @@
 GitHub EC2 Deploy
 =================
 
-Deploying Cookiecutter Django to EC2 with Blue/Green Deployment and GitHub actions
+This repository is still in progress. I've lost a bit of interest after my project needed
+to use ECS instead of CodeDeploy. However, I have detailed some notes on how to manually
+start trying stuff out, below.
 
-.. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
-     :target: https://github.com/pydanny/cookiecutter-django/
-     :alt: Built with Cookiecutter Django
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-     :target: https://github.com/ambv/black
-     :alt: Black code style
-
+Deploying Cookiecutter Django to EC2 with AWS CodeDeploy and GitHub actions
 
 :License: BSD
+
+In-Progress Notes
+-----------------
+Instructions for Deployment of Cookiecutter Django project.
+
+1. Create an AWS account.
+2. Make a new IAM role with AdministratorAccess. This IAM role is for yourself and testing on local machine using AWS CLI and the projects.
+3. Register for a domain on Route 53.
+4. Find ACM (certificate manager) and add your domain and its www. format, as well.
+5. Create a new target group in EC2 dashboard. Open it on port 80 (this is for fast communication between ALB and EC2 instances. The reverse nginx proxy will convert it back into HTTPS).
+6. Create a new AutoScaling group. Select Create a new launch configuration.
+    1. Select whichever image you prefer.
+    2. Attach the correct IAM role for your EC2 instances.
+    3. Security group only needs HTTP, but you can add both since we can just reuse it for the ALB setup.
+    4. Make sure you remember which subnet you’re on (this is the availability zones. If the ALB is not in the same zone as your EC2 instances, you’ll be in trouble).
+    5. The VPC/network must be the same, i.e. default.
+    6. Make sure in advanced details you add the target group. You do not add ALB here.
+7. Back in your target group, you should now see the newly created instances. Register them as targets on port 80.
+8. Create a new Application Load Balancer (handles balancing and deployment flawlessly*).
+    1. Listeners should include HTTPS, too.
+    2. The availability zones at the bottom should match that of the AutoScaling group. Select at least 2.
+    3. Choose certificate name (it should include your domain name)
+    4. Security group can be the same as the AutoScaling group.
+    5. Select your previously made target group.
+9. Finally, add your ALB to your domain using A records.
+    1. You can find your ALB’s public IP address in EC2 network interfaces.
+10. Your DevOps setup is good to go! Your target group will do health checks every 300 seconds, so no worries if you haven’t uploaded your site to the EC2 instances yet.
+
+Some other notes:
+
+I first wanted to use RabbitMQ + Celery for Docker Compose, only to stick with AWS ElastiCache Redis
+instead for easy scalability; thus, I'm heading to my other repository that's working on a
+cookiecutter-django project for ECS. It's more simple, but the Dockerfile is a little differently
+configured.
+
+I will come back to this in the future, but, for now, it's not the time. My next startup will
+use the progress done here, but if anyone else would like to help, please do!
 
 AWS Services in Use
 -------------------
